@@ -21,7 +21,7 @@ namespace MissionPlanner.Utilities
     public class ThemeColor
     {
         public String strColorItemName { get; set; }
-        
+
         [XmlElement(Type = typeof(XmlColor))]
         public Color clrColor { get; set; }
         public String strVariableName { get; set; }
@@ -88,11 +88,17 @@ namespace MissionPlanner.Utilities
             colors.Add("BackStageView Button Area", Color.Black, "BSVButtonAreaBGColor");					// This changes the colour of a backstageview button area
             colors.Add("BSV Unselected Text", Color.WhiteSmoke, "UnselectedTextColour");			// This changes the colour of unselected text in a BSV button
             colors.Add("Horizontal ProgressBar", Color.FromArgb(148, 193, 31), "HorizontalPBValueColor"); // This changes the colour of the horizontal progressbar
-            colors.Add("HUD text and drawings", Color.LightGray, "HudText");                       
-            colors.Add("HUD Ground top", Color.FromArgb(0x9b, 0xb8, 0x24), "HudGroundTop");
-            colors.Add("HUD Ground bottom", Color.FromArgb(0x41, 0x4f, 0x07), "HudGroundBot");
-            colors.Add("HUD Sky top", Color.Blue, "HudSkyTop");
-            colors.Add("HUD Sky bottom", Color.LightBlue, "HudSkyBot");
+            colors.Add("HUD text and drawings", Color.LightGray, "HudText");
+            //colors.Add("HUD Ground top", Color.FromArgb(0x9b, 0xb8, 0x24), "HudGroundTop");
+            //colors.Add("HUD Ground bottom", Color.FromArgb(0x41, 0x4f, 0x07), "HudGroundBot");
+            // UROC Custom ground colors
+            colors.Add("HUD Ground top", Color.FromArgb(64, 64, 65), "HudGroundTop");
+            colors.Add("HUD Ground bottom", Color.FromArgb(64, 64, 65), "HudGroundBot");
+            //colors.Add("HUD Sky top", Color.Blue, "HudSkyTop");
+            //colors.Add("HUD Sky bottom", Color.LightBlue, "HudSkyBot");
+            // UROC custom sky colors
+            colors.Add("HUD Sky top", Color.FromArgb(35, 116, 181), "HudSkyTop");
+            colors.Add("HUD Sky bottom", Color.FromArgb(35, 116, 181), "HudSkyBot");
 
         }
 
@@ -104,7 +110,7 @@ namespace MissionPlanner.Utilities
                 Type objType = typeof(ThemeManager);
                 FieldInfo info = objType.GetField(_color.strVariableName);
 
-                if (info != null && info.FieldType.Name.Equals("Color") )
+                if (info != null && info.FieldType.Name.Equals("Color"))
                 {
                     info.SetValue(objType, _color.clrColor);
                     Console.WriteLine(_color.strColorItemName + " to " + _color.clrColor);
@@ -125,7 +131,7 @@ namespace MissionPlanner.Utilities
                     case IconSet.HighContrastIconSet:
                         MainV2.instance.switchicons(new MainV2.highcontrastmenuicons());
                         break;
-                    default:                                                            
+                    default:
                         MainV2.instance.switchicons(new MainV2.burntkermitmenuicons());     //Fall back to BurntKermit
                         break;
                 }
@@ -252,7 +258,7 @@ namespace MissionPlanner.Utilities
             Console.WriteLine(strThemeName + " theme is loading");
 
             ThemeManager.GetThemesList();
-            
+
             //check theme extension to determine location (mpsystheme is in the program directory, mpusertheme is in the userdata directory)
             if (Path.GetExtension(strThemeName).Equals(".mpsystheme", StringComparison.OrdinalIgnoreCase))
             {
@@ -1082,27 +1088,27 @@ mc:Ignorable=""d""
                     Controls.QuickView but = (QuickView)ctl;
                     if (but.Name == "quickView6")
                     {
-                        but.numberColor = Color.FromArgb((0 + mix.R) / 2, (255 + mix.G) / 2, (252 + mix.B) / 2);
+                        but.numberColor = Color.White; //FromArgb((0 + mix.R) / 2, (255 + mix.G) / 2, (252 + mix.B) / 2);
                     }
                     else if (but.Name == "quickView5")
                     {
-                        but.numberColor = Color.FromArgb((254 + mix.R) / 2, (254 + mix.G) / 2, (86 + mix.B) / 2);
+                        but.numberColor = Color.White; // FromArgb((254 + mix.R) / 2, (254 + mix.G) / 2, (86 + mix.B) / 2);
                     }
                     else if (but.Name == "quickView4")
                     {
-                        but.numberColor = Color.FromArgb((0 + mix.R) / 2, (255 + mix.G) / 2, (83 + mix.B) / 2);
+                        but.numberColor = Color.White; // FromArgb((0 + mix.R) / 2, (255 + mix.G) / 2, (83 + mix.B) / 2);
                     }
                     else if (but.Name == "quickView3")
                     {
-                        but.numberColor = Color.FromArgb((255 + mix.R) / 2, (96 + mix.G) / 2, (91 + mix.B) / 2);
+                        but.numberColor = Color.White; // FromArgb((255 + mix.R) / 2, (96 + mix.G) / 2, (91 + mix.B) / 2);
                     }
                     else if (but.Name == "quickView2")
                     {
-                        but.numberColor = Color.FromArgb((254 + mix.R) / 2, (132 + mix.G) / 2, (46 + mix.B) / 2);
+                        but.numberColor = Color.White; // FromArgb((254 + mix.R) / 2, (132 + mix.G) / 2, (46 + mix.B) / 2);
                     }
                     else if (but.Name == "quickView1")
                     {
-                        but.numberColor = Color.FromArgb((209 + mix.R) / 2, (151 + mix.G) / 2, (248 + mix.B) / 2);
+                        but.numberColor = Color.White; // FromArgb((209 + mix.R) / 2, (151 + mix.G) / 2, (248 + mix.B) / 2);
                     }
                     but.numberColorBackup = but.numberColor;
                     //return;  //return removed to process all quickView controls

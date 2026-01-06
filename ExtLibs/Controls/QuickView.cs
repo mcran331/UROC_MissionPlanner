@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using SkiaSharp.Views.Desktop;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace MissionPlanner.Controls
 {
@@ -76,11 +77,17 @@ namespace MissionPlanner.Controls
             e2.Surface.Canvas.Clear();
             int y = 0;
             {
-                Size extent = e.MeasureString(desc, this.Font).ToSize();
+                // UROC: adding field to increase the size of the quick tab label fonts
+                Font labelFont = this.Font;
+                labelFont = new Font(this.Font.FontFamily, 13F, this.Font.Style);
+
+                Size extent = e.MeasureString(desc, labelFont).ToSize();
 
                 var mid = extent.Width / 2;
 
-                e.DrawString(desc, this.Font, new SolidBrush(this.ForeColor), this.Width / 2 - mid, 5);
+                // UROC: changing line to change font size
+                e.DrawString(desc, labelFont, new SolidBrush(this.ForeColor), this.Width / 2 - mid, 5);
+                //e.DrawString(desc, this.Font, new SolidBrush(this.ForeColor), this.Width / 2 - mid, 5);
 
                 y = extent.Height;
             }
@@ -94,7 +101,7 @@ namespace MissionPlanner.Controls
                 float wRatio = this.Width / (float)extent.Width;
                 float ratio = (hRatio < wRatio) ? hRatio : wRatio;
 
-                newSize = (newSize * ratio);// * 0.75f; // pixel to points
+               newSize = (newSize * ratio);// * 0.75f; // pixel to points
 
                 newSize -= newSize % 5;
 
