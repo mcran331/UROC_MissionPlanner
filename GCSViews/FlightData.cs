@@ -434,7 +434,7 @@ namespace MissionPlanner.GCSViews
 
         //    tabControlactions.ControlRemoved += (s, e) => DebugLog.Log("tabControlactions ControlRemoved: " + e.Control?.Name + "\nSTACK:\n" + Environment.StackTrace);
         //}
-        // +++++++++++++++++++++++++++ end UROC added method +++++++++++++++++++++++++++++
+         //+++++++++++++++++++++++++++ end UROC added method +++++++++++++++++++++++++++++
 
 
         public void Activate()
@@ -6454,25 +6454,40 @@ namespace MissionPlanner.GCSViews
                 FlightID_tb.Enabled = true;
                 Squawk_nud.Enabled = true;
 
-                if (!(STBY_btn.Focused || ON_btn.Focused || ALT_btn.Focused))
-                {
-                    Mode_clb.SetItemChecked(0, MainV2.comPort.MAV.cs.xpdr_mode_A_enabled);
-                    Mode_clb.SetItemChecked(1, MainV2.comPort.MAV.cs.xpdr_mode_C_enabled);
-                    Mode_clb.SetItemChecked(2, MainV2.comPort.MAV.cs.xpdr_mode_S_enabled);
-                    Mode_clb.SetItemChecked(3, MainV2.comPort.MAV.cs.xpdr_es1090_tx_enabled);
-                    STBY_btn.Font = new Font(STBY_btn.Font, (!Mode_clb.GetItemChecked(0) &&
-                                                             !Mode_clb.GetItemChecked(1) &&
-                                                             !Mode_clb.GetItemChecked(2) &&
-                                                             !Mode_clb.GetItemChecked(3)) ? FontStyle.Bold : FontStyle.Regular);
-                    ON_btn.Font = new Font(ON_btn.Font, (Mode_clb.GetItemChecked(0) &&
-                                                             !Mode_clb.GetItemChecked(1) &&
-                                                              Mode_clb.GetItemChecked(2) &&
-                                                              Mode_clb.GetItemChecked(3)) ? FontStyle.Bold : FontStyle.Regular);
-                    ALT_btn.Font = new Font(ALT_btn.Font, (Mode_clb.GetItemChecked(0) &&
-                                                              Mode_clb.GetItemChecked(1) &&
-                                                              Mode_clb.GetItemChecked(2) &&
-                                                              Mode_clb.GetItemChecked(3)) ? FontStyle.Bold : FontStyle.Regular);
-                }
+                // =========== UROC Commenting out code that causes mode checkboxes to be overwritten ===========
+                //if (!(STBY_btn.Focused || ON_btn.Focused || ALT_btn.Focused))
+                //{
+                //Mode_clb.SetItemChecked(0, MainV2.comPort.MAV.cs.xpdr_mode_A_enabled);
+                //Mode_clb.SetItemChecked(1, MainV2.comPort.MAV.cs.xpdr_mode_C_enabled);
+                //Mode_clb.SetItemChecked(2, MainV2.comPort.MAV.cs.xpdr_mode_S_enabled);
+                //Mode_clb.SetItemChecked(3, MainV2.comPort.MAV.cs.xpdr_es1090_tx_enabled);
+                //    STBY_btn.Font = new Font(STBY_btn.Font, (!Mode_clb.GetItemChecked(0) &&
+                //                                             !Mode_clb.GetItemChecked(1) &&
+                //                                             !Mode_clb.GetItemChecked(2) &&
+                //                                             !Mode_clb.GetItemChecked(3)) ? FontStyle.Bold : FontStyle.Regular);
+                //    ON_btn.Font = new Font(ON_btn.Font, (Mode_clb.GetItemChecked(0) &&
+                //                                             !Mode_clb.GetItemChecked(1) &&
+                //                                              Mode_clb.GetItemChecked(2) &&
+                //                                              Mode_clb.GetItemChecked(3)) ? FontStyle.Bold : FontStyle.Regular);
+                //   ALT_btn.Font = new Font(ALT_btn.Font, (Mode_clb.GetItemChecked(0) &&
+                //                                              Mode_clb.GetItemChecked(1) &&
+                //                                              Mode_clb.GetItemChecked(2) &&
+                //                                              Mode_clb.GetItemChecked(3)) ? FontStyle.Bold : FontStyle.Regular);
+                //}
+                // ============ END UROC commenting out code ======================
+
+                // +++++++++++++++++ Begin UROC adding code to send regular control messages rather than only on button press
+                MainV2.comPort.uAvionixADSBControl(int.MaxValue,
+                                               (ushort)Squawk_nud.Value,
+                                               /*UAVIONIX_ADSB_OUT_CONTROL_STATE*/(byte)(
+                                                   (Mode_clb.GetItemChecked(0) ? 16 : 0) |
+                                                   (Mode_clb.GetItemChecked(1) ? 32 : 0) |
+                                                   (Mode_clb.GetItemChecked(2) ? 64 : 0) |
+                                                   (Mode_clb.GetItemChecked(3) ? 128 : 0)
+                                               ),
+                                               0,/*UAVIONIX_ADSB_EMERGENCY_STATUS*/
+                                               Encoding.ASCII.GetBytes(FlightID_tb.Text),
+                                               0);
 
                 fault_clb.SetItemChecked(0, MainV2.comPort.MAV.cs.xpdr_maint_req);
                 fault_clb.SetItemChecked(1, MainV2.comPort.MAV.cs.xpdr_gps_unavail);
