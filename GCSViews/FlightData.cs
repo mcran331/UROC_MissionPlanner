@@ -238,6 +238,8 @@ namespace MissionPlanner.GCSViews
 
             InitializeComponent();
 
+            Mode_clb.ItemCheck += Mode_clb_ItemCheck;
+
             log.Info("Components Done");
 
             instance = this;
@@ -421,21 +423,11 @@ namespace MissionPlanner.GCSViews
 
         }
 
-        // +++++++++++++++++++++++++ UROC adding function to print tabQuick details ++++++++++++++
-        //private void hookQuickDiag()
+        // =============== BEGIN UROC commenting out code for transponder mode clb ================
+        //private void Mode_clb_ItemCheck(object sender, ItemCheckEventArgs e)
         //{
-        //    tabQuick.ParentChanged += (s, e) => DebugLog.Log("tabQuick ParentChanged -> " + (tabQuick.Parent?.GetType().FullName ?? "null") + "\nStack:\n" + Environment.StackTrace);
-
-        //    //tabQuick.HandleDestoyed += (s, e) => DebugLog.Log("tabQuick HandleDestroyed\nSTACK:\n" + Environment.StackTrace);
-
-        //    tabQuick.Disposed += (s, e) => DebugLog.Log("tabQuick Disposed\nSTACK:\n" + Environment.StackTrace);
-
-        //    tabQuick.ControlRemoved += (s, e) => DebugLog.Log("tabQuick ControlRemoved: " + e.Control?.Name + "\nSTACK:\n" + Environment.StackTrace);
-
-        //    tabControlactions.ControlRemoved += (s, e) => DebugLog.Log("tabControlactions ControlRemoved: " + e.Control?.Name + "\nSTACK:\n" + Environment.StackTrace);
+        //    throw new NotImplementedException();
         //}
-         //+++++++++++++++++++++++++++ end UROC added method +++++++++++++++++++++++++++++
-
 
         public void Activate()
         {
@@ -6408,6 +6400,30 @@ namespace MissionPlanner.GCSViews
             }
         }
 
+        // ++++++++++++ Begin UROC adding methods to call uavionix control method on mode_clb change ++++++++++++++
+        private void Mode_clb_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            MainV2.comPort.uAvionixADSBControl(int.MaxValue,
+                                               (ushort)Squawk_nud.Value,
+                                               /*UAVIONIX_ADSB_OUT_CONTROL_STATE*/(byte)(
+                                                   (IsCheckedAfterChange(0, e) ? 16 : 0) |
+                                                   (IsCheckedAfterChange(1, e) ? 32 : 0) |
+                                                   (IsCheckedAfterChange(2, e) ? 64 : 0) |
+                                                   (IsCheckedAfterChange(3, e) ? 128 : 0)
+                                               ),
+                                               0,/*UAVIONIX_ADSB_EMERGENCY_STATUS*/
+                                               Encoding.ASCII.GetBytes(FlightID_tb.Text),
+                                               0);
+        }
+
+        private bool IsCheckedAfterChange(int index, ItemCheckEventArgs e)
+        {
+            if (e.Index == index)
+                return e.NewValue == CheckState.Checked;
+
+            return Mode_clb.GetItemChecked(index);
+        }
+
         private void updateTransponder()
         {
             if (MainV2.comPort.BaseStream == null || !MainV2.comPort.BaseStream.IsOpen)
@@ -6422,6 +6438,7 @@ namespace MissionPlanner.GCSViews
                 IDENT_btn.Enabled = false;
                 FlightID_tb.Enabled = false;
                 Squawk_nud.Enabled = false;
+                Mode_clb.Enabled = false;
 
                 if (transponderNeverConnected)
                 {
@@ -6453,6 +6470,7 @@ namespace MissionPlanner.GCSViews
                 IDENT_btn.Enabled = true;
                 FlightID_tb.Enabled = true;
                 Squawk_nud.Enabled = true;
+                Mode_clb.Enabled = true;
 
                 // =========== UROC Commenting out code that causes mode checkboxes to be overwritten ===========
                 //if (!(STBY_btn.Focused || ON_btn.Focused || ALT_btn.Focused))
@@ -6476,18 +6494,19 @@ namespace MissionPlanner.GCSViews
                 //}
                 // ============ END UROC commenting out code ======================
 
-                // +++++++++++++++++ Begin UROC adding code to send regular control messages rather than only on button press
-                MainV2.comPort.uAvionixADSBControl(int.MaxValue,
-                                               (ushort)Squawk_nud.Value,
-                                               /*UAVIONIX_ADSB_OUT_CONTROL_STATE*/(byte)(
-                                                   (Mode_clb.GetItemChecked(0) ? 16 : 0) |
-                                                   (Mode_clb.GetItemChecked(1) ? 32 : 0) |
-                                                   (Mode_clb.GetItemChecked(2) ? 64 : 0) |
-                                                   (Mode_clb.GetItemChecked(3) ? 128 : 0)
-                                               ),
-                                               0,/*UAVIONIX_ADSB_EMERGENCY_STATUS*/
-                                               Encoding.ASCII.GetBytes(FlightID_tb.Text),
-                                               0);
+                // +++++++++++++++++ Begin UROC adding code to send regular control messages rather than only on button press +++++++++++
+                //MainV2.comPort.uAvionixADSBControl(int.MaxValue,
+                //                               (ushort)Squawk_nud.Value,
+                //                               /*UAVIONIX_ADSB_OUT_CONTROL_STATE*/(byte)(
+                //                                   (Mode_clb.GetItemChecked(0) ? 16 : 0) |
+                //                                   (Mode_clb.GetItemChecked(1) ? 32 : 0) |
+                //                                   (Mode_clb.GetItemChecked(2) ? 64 : 0) |
+                //                                   (Mode_clb.GetItemChecked(3) ? 128 : 0)
+                //                               ),
+                //                               0,/*UAVIONIX_ADSB_EMERGENCY_STATUS*/
+                //                               Encoding.ASCII.GetBytes(FlightID_tb.Text),
+                //                               0);
+                // +++++++++++++++++++ END UROC added code ++++++++++++++++++++++++
 
                 fault_clb.SetItemChecked(0, MainV2.comPort.MAV.cs.xpdr_maint_req);
                 fault_clb.SetItemChecked(1, MainV2.comPort.MAV.cs.xpdr_gps_unavail);
@@ -6532,6 +6551,7 @@ namespace MissionPlanner.GCSViews
                 IDENT_btn.Enabled = false;
                 FlightID_tb.Enabled = false;
                 Squawk_nud.Enabled = false;
+                Mode_clb.Enabled = false;
 
                 XPDRConnect_btn.Text = "Transponder Offline";
                 XPDRConnect_btn.Enabled = false;
